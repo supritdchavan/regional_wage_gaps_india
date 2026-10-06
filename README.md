@@ -4,6 +4,8 @@ How much do regular salaried workers earn in different Indian states? This proje
 average monthly pay across India's 15 most populous states using the latest
 Periodic Labour Force Survey (PLFS).
 
+> **Part 2** below adjusts these figures for price differences between states.
+
 ![Chart](outputs/regional_wage_gap_top15_states.png)
 
 ## Key findings

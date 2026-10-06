@@ -38,3 +38,29 @@ Suprit Dattatray Chavan, MSc Economic Policy & Data Analytics, University of Liv
 [LinkedIn](https://www.linkedin.com/in/suprit-chavan)
 
 Part of my journey toward the Youth Changemakers Summit 2026 (#YCS26).
+
+---
+
+## Part 2: Adjusting pay for price differences
+
+![Price-adjusted chart](outputs/price_adjusted_pay_top15_states.png)
+
+Run `python analysis_cost_of_living.py`.
+
+**Method.** Prices differ between states, so nominal pay overstates purchasing power in costlier states. India has no
+current, official state-by-state price-level index. As a rough proxy I use the Planning Commission's **state-specific
+poverty lines for 2011-12**, which were built to reflect price differences between states (state line / all-India line,
+rural and urban separately).
+1. The urban share of regular wage workers in each state is backed out of the PLFS table itself.
+2. State price index = rural and urban price ratios weighted by that share.
+3. Price-adjusted pay = nominal pay / price index (all-India prices = 1).
+
+**What changes.** Maharashtra drops from #1 to #5, Gujarat from #10 to #14; Jharkhand rises from #7 to #2 and Odisha
+from #12 to #7. The top-to-bottom gap narrows only modestly (1.63x to 1.55x).
+
+**Limitations (please read).**
+- The price proxy is from **2011-12** and reflects the consumption basket of poorer households, not of salaried workers.
+  Housing costs, a big driver of urban living costs, are only partly captured.
+- Telangana did not exist in 2011-12, so undivided Andhra Pradesh's lines are used for it.
+- Weights are derived from the pay table, not from a separate headcount.
+- Treat the results as indicative. Small differences in rank are not meaningful.

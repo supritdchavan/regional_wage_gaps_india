@@ -1,15 +1,18 @@
 """
 Post 2: price-adjusted pay across India's 15 largest states.
 
-Idea: states differ in prices. The Planning Commission's state poverty lines (2011-12) are
-built from state-specific price differences, so state line / all-India line is used as a
-RELATIVE PRICE INDEX (rural and urban separately). This is a rough, dated proxy.
+Idea: states differ in prices. The Planning Commission's state poverty lines (2011-12, Rs per
+person per month) are built from state-specific price differences, so they are used as a rough,
+dated PRICE PROXY. Rural and urban lines are kept in rupees, so the fact that urban prices are
+higher than rural prices everywhere is captured, not ignored.
 
 Steps
 1. Urban share of regular wage workers in a state is backed out of the PLFS table itself:
    All = (1-w)*Rural + w*Urban  ->  w = (All - Rural) / (Urban - Rural)
-2. State price index = (1-w)*(rural line/816) + w*(urban line/1000)
-3. Price-adjusted pay = nominal pay / price index  (all-India prices = 1)
+2. State price level = (1-w)*rural line + w*urban line   (Rs)
+3. Price index = state price level / all-India price level (same formula with all-India lines
+   816 and 1,000 and the all-India urban share). All-India = 1.
+4. Price-adjusted pay = nominal pay / price index
 
 Run:  python analysis_cost_of_living.py
 """
@@ -28,7 +31,10 @@ pl = pd.read_csv(ROOT / "data" / "state_poverty_lines_2011_12_selected.csv")
 d = pl.merge(wage, on="State_UT")
 assert len(d) == 15
 d["urban_share"] = (d.All_Person - d.Rural_Person) / (d.Urban_Person - d.Rural_Person)
-d["price_index"] = (1 - d.urban_share) * (d.PL_Rural / 816) + d.urban_share * (d.PL_Urban / 1000)
+india = wage[wage.State_UT == "all India"].iloc[0]
+w_in = (india.All_Person - india.Rural_Person) / (india.Urban_Person - india.Rural_Person)
+base = (1 - w_in) * 816 + w_in * 1000
+d["price_index"] = ((1 - d.urban_share) * d.PL_Rural + d.urban_share * d.PL_Urban) / base
 d["adjusted_pay"] = (d.All_Person / d.price_index).round(0)
 d["rank_nominal"] = d.All_Person.rank(ascending=False).astype(int)
 d["rank_adjusted"] = d.adjusted_pay.rank(ascending=False).astype(int)
